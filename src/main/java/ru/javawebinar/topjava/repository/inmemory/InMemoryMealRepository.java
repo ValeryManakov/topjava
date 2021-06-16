@@ -1,8 +1,11 @@
 package ru.javawebinar.topjava.repository.inmemory;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
@@ -19,12 +22,16 @@ public class InMemoryMealRepository implements MealRepository {
     private final Map<Integer, Meal> repository = new ConcurrentHashMap<>();
     private final AtomicInteger counter = new AtomicInteger(0);
 
+    @Autowired
+    private UserService userService;
+
     {
         MealsUtil.meals.forEach(meal -> save(1, meal));
     }
 
     @Override
     public boolean check(int userId, int id) {
+        if (userService.get(userId).getRoles().contains(Role.ADMIN)) return true;
         return userId == repository.get(id).getUserId();
     }
 
