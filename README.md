@@ -1,3 +1,6 @@
+﻿[![Codacy Badge](https://app.codacy.com/project/badge/Grade/b0438f37753d4b2a99188913250780e0)](https://www.codacy.com/gh/ValeryManakov/topjava/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ValeryManakov/topjava&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.com/ValeryManakov/topjava.svg?branch=master)](https://travis-ci.com/ValeryManakov/topjava)
+
 Java Enterprise Online Project
 ===============================
 
