@@ -1,7 +1,15 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExternalResource;
+import org.junit.rules.TestName;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
@@ -13,6 +21,8 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -26,6 +36,46 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
+    private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
+    public static final List<String> LOGS = new ArrayList<>();
+
+    @Rule
+    public final TestName testName = new TestName();
+
+    @Rule
+    public final TestWatcher testWatcher = new TestWatcher() {
+        private long startTime;
+        private long endTime;
+
+        @Override
+        protected void starting(Description description) {
+            startTime = System.currentTimeMillis();
+        }
+
+        @Override
+        protected void finished(Description description) {
+            endTime = System.currentTimeMillis();
+            LOGS.add(testName.getMethodName() + " " + (endTime - startTime));
+            log.info("\nTest name - {}, test time - {}\n", testName.getMethodName(), endTime - startTime);
+        }
+    };
+
+    @ClassRule
+    public static final ExternalResource classResource = new ExternalResource() {
+        @Override
+        protected void before() throws Throwable {
+
+        };
+
+        @Override
+        protected void after() {
+            String endMessage = "";
+            for (String message: LOGS) {
+                endMessage += message + "\n";
+            }
+            log.info("\n" + endMessage);
+        };
+    };
 
     @Autowired
     private MealService service;
