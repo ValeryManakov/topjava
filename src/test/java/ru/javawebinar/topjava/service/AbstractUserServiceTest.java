@@ -15,6 +15,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import ru.javawebinar.topjava.repository.JpaUtil;
+import java.util.Collections;
+import java.util.HashSet;
+
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.UserTestData.*;
 
@@ -26,9 +30,13 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     @Autowired
     private CacheManager cacheManager;
 
+    @Autowired
+    protected JpaUtil jpaUtil;
+
     @Before
     public void setup() {
         cacheManager.getCache("users").clear();
+        jpaUtil.clear2ndLevelHibernateCache();
     }
 
     @Test
@@ -93,7 +101,7 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "  ", "mail@yandex.ru", "password", Role.USER)));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "  ", "password", Role.USER)));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "mail@yandex.ru", "  ", Role.USER)));
-        validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "mail@yandex.ru", "password", 9, true, new Date(), Set.of())));
-        validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "mail@yandex.ru", "password", 10001, true, new Date(), Set.of())));
+        validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "mail@yandex.ru", "password", 9, true, new Date(), Collections.unmodifiableSet(new HashSet<>()))));
+        validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "mail@yandex.ru", "password", 10001, true, new Date(), Collections.unmodifiableSet(new HashSet<>()))));
     }
 }
