@@ -63,7 +63,9 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     @Test
     public void get() {
         User user = service.get(USER_ID);
+        User admin = service.get(ADMIN_ID);
         MATCHER.assertMatch(user, UserTestData.user);
+        MATCHER.assertMatch(admin, UserTestData.admin);
     }
 
     @Test
@@ -92,7 +94,6 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Test
     public void createWithException() throws Exception {
-        Assume.assumeTrue(!Arrays.asList(environment.getActiveProfiles()).contains(JDBC));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "  ", "mail@yandex.ru", "password", Role.USER)));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "  ", "password", Role.USER)));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "mail@yandex.ru", "  ", Role.USER)));
