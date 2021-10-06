@@ -2,6 +2,7 @@ package ru.javawebinar.topjava.web.meal;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -31,7 +32,7 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getAll() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + '/'))
+        perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -50,7 +51,7 @@ class MealRestControllerTest extends AbstractControllerTest {
     @Test
     void createWithLocation() throws Exception {
         Meal newMeal = MealTestData.getNew();
-        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL + '/')
+        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newMeal)))
                 .andDo(print())
@@ -85,11 +86,13 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getBetween() throws Exception {
-        String startDateTime = "2020-01-30T00:00:02";
-        String endDateTime = "2020-01-30T23:59:58";
-        String parameters = String.format("?startDateTime=%s&endDateTime=%s", startDateTime, endDateTime);
+        String startDate = "2020-01-30";
+        String startTime = "00:00:02";
+        String endDate = "2020-01-30";
+        String endTime = "23:59:58";
+        String parameters = String.format("?startDate=%s&startTime=%s&endDate=%s&endTime=%s", startDate, startTime, endDate, endTime);
 
-        perform(MockMvcRequestBuilders.get(REST_URL + "/between"+ parameters))
+        perform(MockMvcRequestBuilders.get(REST_URL + "/filter"+ parameters))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))

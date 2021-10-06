@@ -52,9 +52,9 @@ public class JdbcUserRepository implements UserRepository {
             insertRoles(user);
         } else {
             if (namedParameterJdbcTemplate.update("" +
-                    "UPDATE meals " +
-                    "SET description=:description, calories=:calories, date_time=:date_time " +
-                    "WHERE id=:id AND user_id=:user_id", parameterSource) == 0) {
+                    "UPDATE users " +
+                    "SET name=:name, email=:email, password=:password, registered=:registered, " +
+                    "enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id", parameterSource) == 0) {
                 return null;
             }
             // Simplest implementation.

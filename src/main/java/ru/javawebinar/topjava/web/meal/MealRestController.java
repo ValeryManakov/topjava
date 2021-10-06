@@ -1,31 +1,27 @@
 package ru.javawebinar.topjava.web.meal;
 
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
-import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.web.SecurityUtil;
-import ru.javawebinar.topjava.web.user.AdminRestController;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-
-import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
-import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 
 @RestController
 @RequestMapping(value = MealRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class MealRestController extends AbstractMealController {
+
+    @Autowired
+    private ConverterFactory converterFactory;
 
     static final String REST_URL = "/rest/meals";
 
@@ -64,14 +60,13 @@ public class MealRestController extends AbstractMealController {
         super.update(meal, id);
     }
 
-    @GetMapping("/between")
-    public List<MealTo> getBetween(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDateTime,
-                                   @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDateTime) {
-        LocalDate startDate = startDateTime.toLocalDate();
-        LocalTime startTime = startDateTime.toLocalTime();
-        LocalDate endDate = endDateTime.toLocalDate();
-        LocalTime endTime = endDateTime.toLocalTime();
+    @GetMapping("/filter")
+    public List<MealTo> getBetweenRest(@RequestParam String startDate, @RequestParam String startTime,
+                                       @RequestParam String endDate, @RequestParam String endTime) {
+        Converter<String, LocalDate> dateConverter = converterFactory.getConverter(LocalDate.class);
+        Converter<String, LocalTime> timeConverter = converterFactory.getConverter(LocalTime.class);
 
-        return super.getBetween(startDate, startTime, endDate, endTime);
+        return super.getBetweenAbstract(dateConverter.convert(startDate), timeConverter.convert(startTime),
+                                        dateConverter.convert(endDate), timeConverter.convert(endTime));
     }
 }
