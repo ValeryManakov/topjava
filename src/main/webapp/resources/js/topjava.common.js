@@ -1,8 +1,13 @@
-let form;
+let detailsForm;
+let filterForm;
 
 function makeEditable(datatableApi) {
     ctx.datatableApi = datatableApi;
-    form = $('#detailsForm');
+    detailsForm = $('#detailsForm');
+    filterForm = $('#filterForm');
+    $(".checkbox").change(function () {
+        changeState($(this).closest('tr'));
+    });
     $(".delete").click(function () {
         if (confirm('Are you sure?')) {
             deleteRow($(this).closest('tr').attr("id"));
@@ -17,8 +22,36 @@ function makeEditable(datatableApi) {
     $.ajaxSetup({cache: false});
 }
 
+function changeState(tr) {
+    if (tr.attr("data-enabled") === "true") {
+        tr.attr("data-enabled", "false");
+        disable(tr.attr("id"));
+    } else {
+        tr.attr("data-enabled", "true");
+        enable(tr.attr("id"));
+    }
+}
+
+function enable(id) {
+    $.ajax({
+        url: ctx.ajaxUrl + "enable/" + id,
+        type: "PUT"
+    }).done(function () {
+        successNoty("Enabled");
+    });
+}
+
+function disable(id) {
+    $.ajax({
+        url: ctx.ajaxUrl + "disable/" + id,
+        type: "PUT"
+    }).done(function () {
+        successNoty("Disabled");
+    });
+}
+
 function add() {
-    form.find(":input").val("");
+    detailsForm.find(":input").val("");
     $("#editRow").modal();
 }
 
@@ -42,12 +75,39 @@ function save() {
     $.ajax({
         type: "POST",
         url: ctx.ajaxUrl,
-        data: form.serialize()
+        data: detailsForm.serialize()
     }).done(function () {
         $("#editRow").modal("hide");
         updateTable();
         successNoty("Saved");
     });
+}
+
+function filter() {
+    $.ajax({
+        type: "GET",
+        url: ctx.ajaxUrl + filterUrl()
+    }).done(function (data) {
+        ctx.datatableApi.clear().rows.add(data).draw();
+        successNoty("Filtered");
+    });
+}
+
+function filterUrl() {
+    return "filter" + "?" + "startDate=" + filterForm.find("#startDate").val() + "&" +
+        "endDate=" + filterForm.find("#endDate").val() + "&" +
+        "startTime=" + filterForm.find("#startTime").val() + "&" +
+        "endTime=" + filterForm.find("#endTime").val();
+}
+
+function resetFilter() {
+    filterForm.find("#startDate").val(undefined);
+    filterForm.find("#endDate").val(undefined);
+    filterForm.find("#startTime").val(undefined);
+    filterForm.find("#endTime").val(undefined);
+
+    updateTable();
+    successNoty("Reset");
 }
 
 let failedNote;

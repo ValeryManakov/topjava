@@ -35,6 +35,12 @@ public class UserTestData {
         admin.setMeals(Arrays.asList(adminMeal2, adminMeal1));
     }
 
+    public static User getDisabled() {
+        User disabled = new User(user);
+        disabled.setEnabled(false);
+        return disabled;
+    }
+
     public static User getNew() {
         return new User(null, "New", "new@gmail.com", "newPass", 1555, false, new Date(), Collections.singleton(Role.USER));
     }

@@ -44,6 +44,18 @@ public class AdminRestController extends AbstractUserController {
         super.delete(id);
     }
 
+    @PutMapping(value = "/enable/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void enable(@PathVariable int id) {
+        super.enable(id);
+    }
+
+    @PutMapping(value = "/disable/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void disable(@PathVariable int id) {
+        super.disable(id);
+    }
+
     @Override
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)

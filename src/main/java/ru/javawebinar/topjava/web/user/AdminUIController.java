@@ -18,6 +18,18 @@ public class AdminUIController extends AbstractUserController {
         return super.getAll();
     }
 
+    @PutMapping("/enable/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void enable(@PathVariable int id) {
+        super.enable(id);
+    }
+
+    @PutMapping("/disable/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void disable(@PathVariable int id) {
+        super.disable(id);
+    }
+
     @Override
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
