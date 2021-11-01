@@ -1,18 +1,34 @@
 package ru.javawebinar.topjava.to;
 
+import org.hibernate.validator.constraints.Range;
+import org.springframework.format.annotation.DateTimeFormat;
+import ru.javawebinar.topjava.util.DateTimeUtil;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.beans.ConstructorProperties;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class MealTo extends BaseTo {
 
-    private final LocalDateTime dateTime;
+    @NotNull
+    private LocalDateTime dateTime;
 
-    private final String description;
+    @NotBlank
+    @Size(min = 2, max = 120)
+    private String description;
 
-    private final int calories;
+    @Range(min = 10, max = 5000)
+    private int calories;
 
-    private final boolean excess;
+    private boolean excess;
+
+    public MealTo() {
+
+    }
 
     @ConstructorProperties({"id", "dateTime", "description", "calories", "excess"})
     public MealTo(Integer id, LocalDateTime dateTime, String description, int calories, boolean excess) {
@@ -37,6 +53,22 @@ public class MealTo extends BaseTo {
 
     public boolean isExcess() {
         return excess;
+    }
+
+    public void setDateTime(String dateTime) {
+        this.dateTime = DateTimeUtil.parse(dateTime);
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCalories(String calories) {
+        if (calories == null || calories.isEmpty()) {
+            this.calories = 0;
+            return;
+        }
+        this.calories = Integer.parseInt(calories);
     }
 
     @Override
