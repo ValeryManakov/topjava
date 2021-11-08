@@ -23,6 +23,7 @@ function updateRow(id) {
     $("#modalTitle").html(i18n["editTitle"]);
     $.get(ctx.ajaxUrl + id, function (data) {
         $.each(data, function (key, value) {
+            if (key === "dateTime") value = value.replace('T', ' ').replace(':00', '');
             form.find("input[name='" + key + "']").val(value);
         });
         $('#editRow').modal();
@@ -46,10 +47,14 @@ function updateTableByData(data) {
 }
 
 function save() {
+    let id = $("#id").val();
+    let dateTime = $("#dateTime").val().replace(' ', 'T');
+    let description = $("#description").val();
+    let calories = $("#calories").val();
     $.ajax({
         type: "POST",
         url: ctx.ajaxUrl,
-        data: form.serialize()
+        data: 'id=' + id + '&dateTime=' + dateTime + '&description=' + description + '&calories=' + calories
     }).done(function () {
         $("#editRow").modal("hide");
         ctx.updateTable();

@@ -8,6 +8,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.to.UserTo;
 
@@ -26,6 +27,12 @@ public class MealUIController extends AbstractMealController {
     @GetMapping
     public List<MealTo> getAll() {
         return super.getAll();
+    }
+
+    @Override
+    @GetMapping("/{id}")
+    public Meal get(@PathVariable int id) {
+        return super.get(id);
     }
 
     @Override
