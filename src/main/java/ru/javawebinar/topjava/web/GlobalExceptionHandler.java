@@ -10,6 +10,7 @@ import ru.javawebinar.topjava.AuthorizedUser;
 import ru.javawebinar.topjava.util.ValidationUtil;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
@@ -23,7 +24,7 @@ public class GlobalExceptionHandler {
 
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         ModelAndView mav = new ModelAndView("exception",
-                Map.of("exception", rootCause, "message", rootCause.toString(), "status", httpStatus));
+                getModel(rootCause, httpStatus));
         mav.setStatus(httpStatus);
 
         // Interceptor is not invoked, put userTo
@@ -32,5 +33,13 @@ public class GlobalExceptionHandler {
             mav.addObject("userTo", authorizedUser.getUserTo());
         }
         return mav;
+    }
+
+    private Map<String, ?> getModel(Throwable rootCause, HttpStatus httpStatus) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("exception", rootCause);
+        model.put("message", rootCause.toString());
+        model.put("status", httpStatus);
+        return model;
     }
 }
