@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -38,11 +39,11 @@ public class JsonUtil {
     }
 
     public static <T> String writeAdditionProps(T obj, String addName, Object addValue) {
-        return writeAdditionProps(obj, Map.of(addName, addValue));
+        return writeAdditionProps(obj, Collections.singletonMap(addName, addValue));
     }
 
     public static <T> String writeAdditionProps(T obj, Map<String, Object> addProps) {
-        Map<String, Object> map = getMapper().convertValue(obj, new TypeReference<>() {});
+        Map<String, Object> map = getMapper().convertValue(obj, new TypeReference<Map<String, Object>>() {});
         map.putAll(addProps);
         return writeValue(map);
     }
