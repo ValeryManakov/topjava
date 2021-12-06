@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     private Map<String, ?> getModel(Throwable rootCause, HttpStatus httpStatus) {
         Map<String, Object> model = new HashMap<>();
         model.put("exception", rootCause);
-        model.put("message", rootCause.toString());
+        model.put("message", rootCause.getMessage());
         model.put("status", httpStatus);
         return model;
     }

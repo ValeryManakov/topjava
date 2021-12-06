@@ -1,5 +1,8 @@
 package ru.javawebinar.topjava.web.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -11,10 +14,14 @@ import ru.javawebinar.topjava.to.UserTo;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import javax.validation.Valid;
+import java.util.Locale;
 
 @Controller
 @RequestMapping("/profile")
 public class ProfileUIController extends AbstractUserController {
+
+    @Autowired
+    private MessageSource messageSource;
 
     @GetMapping
     public String profile() {
@@ -26,7 +33,11 @@ public class ProfileUIController extends AbstractUserController {
         if (result.hasErrors()) {
             return "profile";
         } else {
-            super.update(userTo, SecurityUtil.authUserId());
+            try {
+                super.update(userTo, SecurityUtil.authUserId());
+            } catch (DataIntegrityViolationException e) {
+                throw new DataIntegrityViolationException(messageSource.getMessage("user.dublicateEmail", null, Locale.getDefault()));
+            }
             SecurityUtil.get().setTo(userTo);
             status.setComplete();
             return "redirect:/meals";
@@ -46,7 +57,11 @@ public class ProfileUIController extends AbstractUserController {
             model.addAttribute("register", true);
             return "profile";
         } else {
-            super.create(userTo);
+            try {
+                super.create(userTo);
+            } catch (DataIntegrityViolationException e) {
+                throw new DataIntegrityViolationException(messageSource.getMessage("user.dublicateEmail", null, Locale.getDefault()));
+            }
             status.setComplete();
             return "redirect:/login?message=app.registered&username=" + userTo.getEmail();
         }

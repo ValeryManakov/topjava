@@ -1,5 +1,8 @@
 package ru.javawebinar.topjava.web.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -7,14 +10,20 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.User;
 
+import javax.validation.Valid;
+import javax.xml.crypto.Data;
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping(value = AdminRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminRestController extends AbstractUserController {
 
     static final String REST_URL = "/rest/admin/users";
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Override
     @GetMapping
@@ -29,8 +38,13 @@ public class AdminRestController extends AbstractUserController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> createWithLocation(@RequestBody User user) {
-        User created = super.create(user);
+    public ResponseEntity<User> createWithLocation(@Valid @RequestBody User user) {
+        User created = null;
+        try {
+            created = super.create(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException(messageSource.getMessage("user.dublicateEmail", null, Locale.getDefault()));
+        }
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
@@ -47,8 +61,12 @@ public class AdminRestController extends AbstractUserController {
     @Override
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestBody User user, @PathVariable int id) {
-        super.update(user, id);
+    public void update(@Valid @RequestBody User user, @PathVariable int id) {
+        try {
+            super.update(user, id);
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException(messageSource.getMessage("user.dublicateEmail", null, Locale.getDefault()));
+        }
     }
 
     @Override
