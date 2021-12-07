@@ -1,3 +1,4 @@
+<%@ page import="org.springframework.web.util.UrlPathHelper" %>
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
@@ -26,5 +27,11 @@
                 </button>
             </form:form>
         </sec:authorize>
+        <% String url = new UrlPathHelper().getOriginatingRequestUri(request); %>
+        <a class="dropdown-toggle nav-link my-1 ml-2" data-toggle="dropdown" aria-expanded="false"><spring:message code="app.lang"/></a>
+        <div class="dropdown-menu">
+            <a class="dropdown-item" href="<%=url%>?lang=en">English</a>
+            <a class="dropdown-item" href="<%=url%>?lang=ru">Русский</a>
+        </div>
     </div>
 </nav>

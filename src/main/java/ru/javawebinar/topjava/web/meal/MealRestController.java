@@ -1,5 +1,8 @@
 package ru.javawebinar.topjava.web.meal;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -9,16 +12,21 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
 
+import javax.persistence.PersistenceException;
 import javax.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping(value = MealRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class MealRestController extends AbstractMealController {
     static final String REST_URL = "/rest/profile/meals";
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Override
     @GetMapping("/{id}")
@@ -43,12 +51,21 @@ public class MealRestController extends AbstractMealController {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Valid @RequestBody Meal meal, @PathVariable int id) {
-        super.update(meal, id);
+        try {
+            super.update(meal, id);
+        } catch (PersistenceException e) {
+            throw new DataIntegrityViolationException(messageSource.getMessage("meal.dublicateDateTime", null, Locale.getDefault()));
+        }
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Meal> createWithLocation(@Valid @RequestBody Meal meal) {
-        Meal created = super.create(meal);
+        Meal created = null;
+        try {
+            created = super.create(meal);
+        } catch (PersistenceException e) {
+            throw new DataIntegrityViolationException(messageSource.getMessage("meal.dublicateDateTime", null, Locale.getDefault()));
+        }
 
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")

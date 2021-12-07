@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.User;
 
+import javax.persistence.PersistenceException;
 import javax.validation.Valid;
 import javax.xml.crypto.Data;
 import java.net.URI;
@@ -42,7 +43,7 @@ public class AdminRestController extends AbstractUserController {
         User created = null;
         try {
             created = super.create(user);
-        } catch (DataIntegrityViolationException e) {
+        } catch (PersistenceException e) {
             throw new DataIntegrityViolationException(messageSource.getMessage("user.dublicateEmail", null, Locale.getDefault()));
         }
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -64,7 +65,7 @@ public class AdminRestController extends AbstractUserController {
     public void update(@Valid @RequestBody User user, @PathVariable int id) {
         try {
             super.update(user, id);
-        } catch (DataIntegrityViolationException e) {
+        } catch (PersistenceException e) {
             throw new DataIntegrityViolationException(messageSource.getMessage("user.dublicateEmail", null, Locale.getDefault()));
         }
     }

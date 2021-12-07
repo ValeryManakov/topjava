@@ -12,6 +12,7 @@ import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.to.UserTo;
 import ru.javawebinar.topjava.util.ValidationUtil;
 
+import javax.persistence.PersistenceException;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Locale;
@@ -55,7 +56,7 @@ public class AdminUIController extends AbstractUserController {
             } else {
                 super.update(userTo, userTo.id());
             }
-        } catch (DataIntegrityViolationException e) {
+        } catch (PersistenceException e) {
             throw new DataIntegrityViolationException(messageSource.getMessage("user.dublicateEmail", null, Locale.getDefault()));
         }
     }

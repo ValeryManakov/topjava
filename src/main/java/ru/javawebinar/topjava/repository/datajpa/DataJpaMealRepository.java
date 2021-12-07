@@ -5,6 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,6 +15,9 @@ public class DataJpaMealRepository implements MealRepository {
 
     private final CrudMealRepository crudMealRepository;
     private final CrudUserRepository crudUserRepository;
+
+    @PersistenceContext
+    private EntityManager em;
 
     public DataJpaMealRepository(CrudMealRepository crudMealRepository, CrudUserRepository crudUserRepository) {
         this.crudMealRepository = crudMealRepository;
@@ -26,7 +31,9 @@ public class DataJpaMealRepository implements MealRepository {
             return null;
         }
         meal.setUser(crudUserRepository.getById(userId));
-        return crudMealRepository.save(meal);
+        Meal saved = crudMealRepository.save(meal);
+        em.flush();
+        return saved;
     }
 
     @Override

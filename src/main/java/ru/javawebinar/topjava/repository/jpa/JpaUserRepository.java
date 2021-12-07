@@ -30,12 +30,15 @@ public class JpaUserRepository implements UserRepository {
     @Override
     @Transactional
     public User save(User user) {
+        User saved = null;
         if (user.isNew()) {
             em.persist(user);
-            return user;
+            saved = user;
         } else {
-            return em.merge(user);
+            saved =  em.merge(user);
         }
+        em.flush();
+        return saved;
     }
 
     @Override

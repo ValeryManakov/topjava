@@ -13,6 +13,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import ru.javawebinar.topjava.to.UserTo;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
+import javax.persistence.PersistenceException;
 import javax.validation.Valid;
 import java.util.Locale;
 
@@ -35,7 +36,7 @@ public class ProfileUIController extends AbstractUserController {
         } else {
             try {
                 super.update(userTo, SecurityUtil.authUserId());
-            } catch (DataIntegrityViolationException e) {
+            } catch (PersistenceException e) {
                 throw new DataIntegrityViolationException(messageSource.getMessage("user.dublicateEmail", null, Locale.getDefault()));
             }
             SecurityUtil.get().setTo(userTo);
@@ -59,7 +60,7 @@ public class ProfileUIController extends AbstractUserController {
         } else {
             try {
                 super.create(userTo);
-            } catch (DataIntegrityViolationException e) {
+            } catch (PersistenceException e) {
                 throw new DataIntegrityViolationException(messageSource.getMessage("user.dublicateEmail", null, Locale.getDefault()));
             }
             status.setComplete();

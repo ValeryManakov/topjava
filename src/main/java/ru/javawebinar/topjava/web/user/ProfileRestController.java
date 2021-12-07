@@ -11,6 +11,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.to.UserTo;
 
+import javax.persistence.PersistenceException;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Locale;
@@ -41,8 +42,8 @@ public class ProfileRestController extends AbstractUserController {
     public ResponseEntity<User> register(@Valid @RequestBody UserTo userTo) {
         User created = null;
         try {
-            super.create(userTo);
-        } catch (DataIntegrityViolationException e) {
+            created = super.create(userTo);
+        } catch (PersistenceException e) {
             throw new DataIntegrityViolationException(messageSource.getMessage("user.dublicateEmail", null, Locale.getDefault()));
         }
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -55,7 +56,7 @@ public class ProfileRestController extends AbstractUserController {
     public void update(@Valid @RequestBody UserTo userTo) {
         try {
             super.update(userTo, authUserId());
-        } catch (DataIntegrityViolationException e) {
+        } catch (PersistenceException e) {
             throw new DataIntegrityViolationException(messageSource.getMessage("user.dublicateEmail", null, Locale.getDefault()));
         }
     }

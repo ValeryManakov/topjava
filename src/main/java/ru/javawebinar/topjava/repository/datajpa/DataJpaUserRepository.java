@@ -5,6 +5,8 @@ import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Repository
@@ -13,13 +15,18 @@ public class DataJpaUserRepository implements UserRepository {
 
     private final CrudUserRepository crudRepository;
 
+    @PersistenceContext
+    private EntityManager em;
+
     public DataJpaUserRepository(CrudUserRepository crudRepository) {
         this.crudRepository = crudRepository;
     }
 
     @Override
     public User save(User user) {
-        return crudRepository.save(user);
+        User saved = crudRepository.save(user);
+        em.flush();
+        return saved;
     }
 
     @Override
