@@ -21,7 +21,6 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 import java.util.Map;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
@@ -34,7 +33,9 @@ public class ExceptionInfoHandler {
     public static final String EXCEPTION_DUPLICATE_EMAIL = "exception.user.duplicateEmail";
     public static final String EXCEPTION_DUPLICATE_DATETIME = "exception.meal.duplicateDateTime";
 
-    private static final Map<String, String> CONSTRAINS_I18N_MAP = getMap();
+    private static final Map<String, String> CONSTRAINS_I18N_MAP = Map.of(
+            "users_unique_email_idx", EXCEPTION_DUPLICATE_EMAIL,
+            "meals_unique_user_datetime_idx", EXCEPTION_DUPLICATE_DATETIME);
 
     private final MessageSourceAccessor messageSourceAccessor;
 
@@ -87,16 +88,10 @@ public class ExceptionInfoHandler {
     }
 
     //    https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
-    private static ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logStackTrace, ErrorType errorType, String... details) {
+    private ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logStackTrace, ErrorType errorType, String... details) {
         Throwable rootCause = ValidationUtil.logAndGetRootCause(log, req, e, logStackTrace, errorType);
         return new ErrorInfo(req.getRequestURL(), errorType,
+                messageSourceAccessor.getMessage(errorType.getErrorCode()),
                 details.length != 0 ? details : new String[]{ValidationUtil.getMessage(rootCause)});
-    }
-
-    private static Map<String, String> getMap() {
-        Map<String, String> map = new HashMap<>();
-        map.put("users_unique_email_idx", EXCEPTION_DUPLICATE_EMAIL);
-        map.put("meals_unique_user_datetime_idx", EXCEPTION_DUPLICATE_DATETIME);
-        return map;
     }
 }
