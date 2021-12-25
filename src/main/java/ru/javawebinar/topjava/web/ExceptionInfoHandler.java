@@ -20,6 +20,7 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.Map;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
@@ -32,9 +33,14 @@ public class ExceptionInfoHandler {
     public static final String EXCEPTION_DUPLICATE_EMAIL = "exception.user.duplicateEmail";
     public static final String EXCEPTION_DUPLICATE_DATETIME = "exception.meal.duplicateDateTime";
 
-    private static final Map<String, String> CONSTRAINS_I18N_MAP = Map.of(
-            "users_unique_email_idx", EXCEPTION_DUPLICATE_EMAIL,
-            "meals_unique_user_datetime_idx", EXCEPTION_DUPLICATE_DATETIME);
+    private static final Map<String, String> CONSTRAINS_I18N_MAP = getConstraintsI18n();
+
+    private static Map<String, String> getConstraintsI18n() {
+        Map<String, String> map = new HashMap<>();
+        map.put("users_unique_email_idx", EXCEPTION_DUPLICATE_EMAIL);
+        map.put("meals_unique_user_datetime_idx", EXCEPTION_DUPLICATE_DATETIME);
+        return map;
+    }
 
     private final MessageSourceAccessor messageSourceAccessor;
 

@@ -12,6 +12,7 @@ import ru.javawebinar.topjava.util.validation.ValidationUtil;
 import ru.javawebinar.topjava.util.exception.ErrorType;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
@@ -38,12 +39,18 @@ public class GlobalExceptionHandler {
     private ModelAndView logAndGetExceptionView(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType, HttpStatus httpStatus) {
         Throwable rootCause = ValidationUtil.logAndGetRootCause(log, req, e, logException, errorType);
 
-        ModelAndView mav = new ModelAndView("exception",
-                Map.of("exception", rootCause, "message", ValidationUtil.getMessage(rootCause),
-                        "typeMessage", messageSourceAccessor.getMessage(errorType.getErrorCode()),
-                        "status", httpStatus));
+        ModelAndView mav = new ModelAndView("exception", getModel(rootCause, errorType, httpStatus));
         mav.setStatus(httpStatus);
         return mav;
+    }
+
+    private Map<String, Object> getModel(Throwable rootCause, ErrorType errorType, HttpStatus httpStatus) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("exception", rootCause);
+        map.put("message", ValidationUtil.getMessage(rootCause));
+        map.put("typeMessage", messageSourceAccessor.getMessage(errorType.getErrorCode()));
+        map.put("status", httpStatus);
+        return map;
     }
 }
 
